@@ -20,13 +20,13 @@ namespace OnlineShop.Models.Products
             Id = id;
         }
 
-        public double OverallPerformance
+        public virtual double OverallPerformance
         {
             get
             {
                 return overallPerformance;
             }
-            private set
+            protected set
             {
                 if (value <= 0)
                 {
@@ -36,13 +36,13 @@ namespace OnlineShop.Models.Products
             }
         }
 
-        public decimal Price
+        public virtual decimal Price
         {
             get
             {
                 return price;
             }
-            private set
+            protected set
             {
                 if (value <= 0)
                 {
