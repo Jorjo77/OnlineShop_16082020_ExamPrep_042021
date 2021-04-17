@@ -5,19 +5,19 @@ namespace OnlineShop.Models.Products
 {
     public abstract class Product : IProduct
     {
-        private int id;
-        private string manufacturer;
-        private string model;
-        private decimal price;
         private double overallPerformance;
+        private decimal price;
+        private string model;
+        private string manufacturer;
+        private int id;
 
         public Product(double overallPerformance, decimal price, string model, string manufacturer, int id)
         {
-            OverallPerformance = overallPerformance;
-            Price = price;
-            Model = model;
-            Manufacturer = manufacturer;
-            Id = id;
+            this.OverallPerformance = overallPerformance;
+            this.Price = price;
+            this.Model = model;
+            this.Manufacturer = manufacturer;
+            this.Id = id;
         }
 
         public virtual double OverallPerformance

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace OnlineShop.Models.Products
 {
-    public class Computer : Product, IComputer
+    public abstract class Computer : Product, IComputer
     {
         private List<IComponent> components;
         private List<IPeripheral> peripherals;
@@ -18,14 +18,19 @@ namespace OnlineShop.Models.Products
         public Computer(double overallPerformance, decimal price, string model, string manufacturer, int id) 
             : base(overallPerformance, price, model, manufacturer, id)
         {
-            components = new List<IComponent>();
-            peripherals = new List<IPeripheral>();
-            OverallPerformance = overallPerformance;
-            Price = price;
+            this.OverallPerformance = overallPerformance;
+            this.Price = price;
+            this.components = new List<IComponent>();
+            this.peripherals = new List<IPeripheral>();
         }
 
         public IReadOnlyCollection<IComponent> Components
-            => components.AsReadOnly();
+        {
+            get
+            {
+                return components.AsReadOnly();
+            }
+        }
 
         public IReadOnlyCollection<IPeripheral> Peripherals 
             => peripherals.AsReadOnly();
@@ -72,42 +77,71 @@ namespace OnlineShop.Models.Products
         }
         public void AddComponent(IComponent component)
         {
-            throw new System.NotImplementedException();
+            if (components.Any(c => c.GetType().Name == component.GetType().Name))
+            {
+                throw new ArgumentException(string.Format
+                    (ExceptionMessages.ExistingComponent, component.GetType().Name, this.GetType().Name, Id)); 
+            }
+            components.Add(component);
         }
 
         public void AddPeripheral(IPeripheral peripheral)
         {
-            throw new System.NotImplementedException();
+            if (peripherals.Any(c => c.GetType().Name == peripheral.GetType().Name))
+            {
+                throw new ArgumentException(string.Format
+                    (ExceptionMessages.ExistingComponent, peripheral.GetType().Name, this.GetType().Name, Id));
+            }
+            peripherals.Add(peripheral);
         }
 
         public IComponent RemoveComponent(string componentType)
         {
-            throw new System.NotImplementedException();
+            if (components.Any(c => c.GetType().Name == componentType)||components.Count==0)
+            {
+                throw new ArgumentException(string.Format
+                    (ExceptionMessages.NotExistingComponent, componentType, this.GetType().Name, Id));
+            }
+            else
+            {
+                var compForRemouving = components.First(c => c.GetType().Name == componentType);
+                components.Remove(compForRemouving);
+                return compForRemouving;
+            }
         }
 
         public IPeripheral RemovePeripheral(string peripheralType)
         {
-            throw new System.NotImplementedException();
+            if (peripherals.Any(c => c.GetType().Name == peripheralType) || peripherals.Count == 0)
+            {
+                throw new ArgumentException(string.Format
+                    (ExceptionMessages.NotExistingPeripheral, peripheralType, this.GetType().Name, Id));
+            }
+            else
+            {
+                var peripForRemouving = peripherals.First(c => c.GetType().Name == peripheralType);
+                peripherals.Remove(peripForRemouving);
+                return peripForRemouving;
+            }
         }
 
         public override string ToString()
         {
-            //" Components ({components count}):"
-            //"  {component one}"
-            //"  {component two}"
-            //"  {component n}"
-            //" Peripherals ({peripherals count}); Average Overall Performance ({average overall performance peripherals}):"
-            //"  {peripheral one}"
-            //"  {peripheral two}"
-            //"  {peripheral n}"
             StringBuilder sb = new StringBuilder();
+
             sb.AppendLine($" Components ({components.Count}):");
             foreach (var component in components)
             {
                 sb.AppendLine(component.GetType().Name);
             }
+            sb.AppendLine($"Peripherals ({peripherals.Count}); " +
+                $"Average Overall Performance ({peripherals.Average(p => p.OverallPerformance)}):");
+            foreach (var peripheral in peripherals)
+            {
+                sb.AppendLine(peripheral.GetType().Name);
+            }
 
-            return base.ToString() + ;
+            return base.ToString() + sb.ToString().TrimEnd();
         }
     }
 }
